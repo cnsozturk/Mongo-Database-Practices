@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+    <head>
+     
+        <meta name="author" content="Bambang">
+        <meta charset="utf-8">
+
+    </head>
+    <body>
+        <header>
+            <h3>Mongo Database sample</h3>
+        </header>
+        <body>
+           <p> Exercise with Mongo Db using VS Code <br>
+            Q1 . Populate a products collection using the following command (make sure that no documents exist in the products collection before running the command).<br>
+            
+            db.products.insertMany( [<br>
+              { item: "book", size: { h: 28, w: 35 }, status: "A" , instock: [ { warehouse: "A", qty: 35 }, { warehouse: "B", qty: 30 }, { warehouse: "C", qty: 20 }  ] },<br>
+              { item: "journal", size: { h: 16, w: 25}, status: "A", instock: [ { warehouse: "C", qty: 15 } ] },<br>
+              { item: "mat", size: { h: 19, w: 23 }, status: "P", instock: [ { warehouse: "A", qty: 60 } ] }, <br>
+              { item: "notebook", size: { h: 8.5, w: 11 }, status: "A", instock: [ { warehouse: "A", qty: 40 }, { warehouse: "B", qty: 5 } ] },<br>
+              { item: "postcard", size: { h: 8.5, w: 11 }, status: "P", instock: [ { warehouse: "A", qty: 20 }, { warehouse: "B", qty: 15 }, { warehouse: "C", qty: 35 }, { warehouse: "D", qty: 15 } ]  },<br>
+              { item: "sketchbook", size: { h: 18.85, w: 30 }, status: "P", instock: [ { warehouse: "A", qty: 25 }, { warehouse: "C", qty: 25 }, { warehouse: "D", qty: 20 } ] }<br>
+            ] );<br>
+            <br>
+            1.	Find the documents in which the instock array has more than two elements and the qty of the first element is less than 30. Display the item and status fields only in the result.<br>
+            
+            Copy and paste your MongoDB command below<br>
+            db.products.aggregate(<br>
+            [<br>
+                 {$project: {item:1, status:1,_id:0,<br>
+                             size_of_instock: {$size: "$instock"},"firstElem": { "$arrayElemAt": [ "$instock.qty", 0 ]}<br>
+                             }<br>
+                 },<br>
+                 {$match: {"size_of_instock": {$gt: 2},"firstElem":{$lt: 30}}}<br>
+            ])<br>
+            
+            <br>
+            
+            Insert the screenshot of result below<br>
+            <img src="Picture1.png" alt="img"
+            height="300" >
+            <br>
+            
+            2.	Find the documents in which h is greater than 20 or the qty at warehouse C is greater than 30. Display the item and size fields only in the result (you should not use $unwind).<br>
+            
+            Copy and paste your MongoDB command below<br>
+                  db.products.aggregate(<br>
+            [{$match: { "$or" : [<br>
+                          { "size.h"  : { "$gt" : 20 } },<br>
+                          {"instock":{$elemMatch : {warehouse:"C",qty:  { $gt : 30 }}}}<br>
+                          <br>
+              ]  }}<br>
+            , { $project: { _id: 0, item: 1, size:1 } }<br>
+            ])<br>
+            
+            
+            
+            Insert the screenshot of result below<br>
+            
+            <img src="Picture2.png" alt="img" height="300" ><br><br>
+            
+            Q2 . Populate an instructors collection using the following command (make sure that no documents exist in the instructors collection before running the command).<br>
+            
+            db.instructors.insertMany( [<br>
+              { <br>
+                "name": "Zhang", <br>
+                "dept_name": "CS", <br>
+                "salary": 68000, <br>
+                "teaches": [ { course_id: "CS-101", year: 2018 }, { course_id: "CS-347", year: 2018 } ] <br>
+              },<br>
+              { <br>
+                "name": "Levy", <br>
+                "dept_name": "CS", <br>
+                "salary": 80000,<br> 
+                "teaches": [ { course_id: "CS-128", year: 2016 }, { course_id: "CS-201", year: 2017 } ] <br>
+              },<br>
+              { <br>
+                "name": "Brandt",<br>
+                "dept_name": "Finance", <br>
+                "salary": 90000, <br>
+                "teaches": [ { course_id: "FIN-201", year: 2016 }, { course_id: "FIN-301", year: 2017 }, { course_id: "FIN-320", year: 2017 } ] <br>
+              },<br>
+              { <br>
+                "name": "Davis", <br>
+                "dept_name": "Finance", <br>
+                "salary": 78000, <br>
+                "teaches": [ { course_id: "FIN-102", year: 2017 }, { course_id: "FIN-200", year: 2018 } ] <br>
+              },<br>
+              { <br>
+                "name": "Crick",<br>
+                "dept_name": "Biology",<br>
+                "salary": 92000,<br>
+                "teaches": [ { course_id: "BIO-101", year: 2017 }, { course_id: "BIO-301", year: 2018 }, { course_id: "BIO-301", year: 2018 } ] <br>
+              },<br>
+              { <br>
+                "name": "Williams",<br>
+                "dept_name": "Biology",<br>
+                "salary": 72000,<br>
+                "teaches": [ { course_id: "BIO-101", year: 2016 }, { course_id: "BIO-201", year: 2017 }, { course_id: "BIO-101", year: 2018 } ] <br>
+              }<br>
+            ] );<br>
+            
+            
+            
+            
+            
+            
+            1.	Find the average salary of each department and sort the result by the average salary in descending order. The result should display the department name and the average salary of each department.<br>
+            
+            Copy and paste your MongoDB command below<br>
+            
+            db.instructors.aggregate(<br>
+               [<br>
+                 {<br>
+                   $group:<br>
+                     {<br>
+                       _id: "$dept_name",<br>
+                       avg_sal:{$avg:"$salary"} }<br>
+                 },{$sort:{avg_sal:-1}}<br>
+                 <br>
+               ]<br>
+            )<br>
+            
+            
+            Insert the screenshot of result below<br>
+            <img src="Picture3.png" alt="img" height="300" ><br><br>
+            
+            2.	Find the number of instructors who taught in each year and sort the result in chronological order. The sample output is as follows. You may check the $addToSet operator.<br>
+             
+            <img src="Picture4.png" alt="img" height="50" ><br><br>
+            Copy and paste your MongoDB command below<br>
+            db.instructors.aggregate( [ <br>
+               { $unwind: "$teaches" } ,<br>
+               { $group: { _id: "$teaches.year",i_name:{$addToSet:"$name"} } },<br>
+               {$project: {year:"$_id",_id:0,"totalinstructor":{$size:"$i_name"}}},<br>
+               {$sort: {year:1}}<br>
+               
+               ] )<br>
+            
+            
+            
+            Insert the screenshot of result below<br>
+            <img src="Picture5.png" alt="img" height="300" ><br><br>
+
+            
+            
+            Q3 . Populate a clothes collection using the following command (make sure that no documents exist in the clothes collection before running the command).<br>
+            
+            db.clothes.insertMany( [<br>
+              { product: "blouse", instock: [ { size: "M", qty: 35 }, { size: "S", qty: 35 } ], type: "women" },  <br>
+              { product: "hoodie", instock: [{ size: "S", qty: 35 } ], type: "boys" },<br>
+              { product: "jacket", instock: [ { size: "M", qty: 40 }, { size: "S", qty: 25 } ], type: "girls" },<br>
+              { product: "jeans", instock: [ { size: "L", qty: 50 }, { size: "M", qty: 20 } ], type: "men" },<br>
+              { product: "pant", instock: [{ size: "L", qty: 40 } ], type: "men" },<br>
+              { product: "shirt", instock: [ { size: "M", qty: 15 }, { size: "S", qty: 10 } ], type: "women"  }  <br>
+            ] );<br>
+            
+            1.	Find the total qty of each size. Display the size and total qty of the size only if the total qty is greater than 100.<br>
+            
+            Copy and paste your MongoDB command below<br>
+            
+               db.clothes.aggregate([<br>
+            {$unwind:"$instock"},<br>
+            {$group:{_id:"$instock.size",sumqty:{$sum:"$instock.qty"}}},<br>
+             {$match: {"sumqty": {$gt: 100}}}<br>
+             <br>
+            ])<br>
+            
+            
+            Insert the screenshot of result below<br>
+             
+            <img src="Picture6.png" alt="img"><br><br>
+            
+            2.	Find the product(s) of each type and store them/it in a products array for each type. Display the type and products only if the products array contains exactly two elements. The result may look like the following (pay attention to the field name).
+            
+            <img src="Picture7.png" alt="img"><br><br>
+            
+       
+            
+             
+            
+            
+            
+             </p>
+        </body>
+        <footer>
+
+        </footer>
+    </body>
+</html>
